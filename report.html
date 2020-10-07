@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>AFAD.Konum</title>
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+            * element that contains the map. */
+        
+        #divMap {
+            float: right;
+            height: 100%;
+            width: 100%;
+        }
+        
+        #divOperation {
+            float: left;
+            height: 100%;
+            width: 20%;
+        }
+        
+        #table {
+            float: left;
+        }
+        /* Optional: Makes the sample page fill the window. */
+        
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #maintable td.red {
+            color: red
+        }
+        
+        #maintable td.green {
+            color: green
+        }
+        
+        #maintable td.tıkla {
+            cursor: pointer;
+            width: 170px;
+        }
+        
+        .sidebar .nav-item .nav-link2 {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 1rem;
+            color: #fff
+        }
+    </style>
+
+</head>
+
+<body id="page-top">
+
+    <!--   Yeni Bir Operasyon Oluşturma Penceresi -->
+    <div class="modal fade" id="mdlNewOperation" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Yeni Operasyon Oluştur.</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p> Lütfen yeni bir operasyon başlatmadan önce bir operasyon adı giriniz.</p>
+                    <div class="form-group">
+                        <label for="txtNewOperationName">Operasyon Adı:</label>
+                        *<input type="text" class="form-control" id="txtNewOperationName" placeholder="Operasyon Adı Giriniz." >
+                    </div>
+                    <div class="modal-header">
+                        <h6 class="modal-title">Kayıp Kişi Hakkında Temel Bilgiler</h6>
+                    </div>
+                    <div class="form-group">
+                        <label for="txtWantedName">İsim:</label>
+                        <input type="text" class="form-control" id="txtWantedName" placeholder="Aranan Kişinin Adını Giriniz.">
+                    </div>
+                    <div class="form-group">
+                        <label for="txtWantedSurname">Soyisim:</label>
+                        <input type="text" class="form-control" id="txtWantedSurname" placeholder="Aranan Kişinin Soyadını Giriniz.">
+                    </div>
+                    <div class="form-group">
+                        <label for="txtWantedAge">Yaş:</label>
+                        <input type="text" class="form-control" id="txtWantedAge" placeholder="Aranan Kişinin Yaşını Giriniz.">
+                    </div>
+                    <div class="form-group">
+                        <label for="txtWantedGender">Cinsiyet:</label>
+                        <select class="form-control" id="txtWantedGender" title="Aranan Kişinin Cinsiyetini Seçiniz">
+                            <option>Erkek</option>
+                            <option>Kadın</option>          
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="txtWantedLength">Boy:</label>
+                        <input type="number" class="form-control" id="txtWantedLength" placeholder="Aranan Kişinin Boyunu Giriniz.">
+                    </div>
+                    <div class="form-group">
+                        <label for="txtWantedWeight">Kilo:</label>
+                        <input type="number" class="form-control" id="txtWantedWeight" placeholder="Aranan Kişinin Kilosunu Giriniz.">
+                    </div>
+                    <div class="form-group">
+                        <label for="txtWantedMoreInformation">Daha Fazla Bilgi</label>
+                        <input type="text" class="form-control" id="txtWantedMoreInformation" placeholder="Aranan Kişi Hakkında Daha Fazla Bilgi">
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-offset-9">
+                        <button class="btn btn-primary btn-lg btn-block"  id="btnAddOperation" onclick="addNewOperation()">Ekle</button>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+    <!-- Elle Merkez Noktası Belirleme Penceresi -->
+    <div class="modal fade" id="mdlTextCenterPoint" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Seçilen Operasyon İçin Merkez Noktası Belirleme.</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+                </div>
+            <div class="modal-body">
+                <p>Bir merkez noktası belirlemek için "Enlem" ve "Boylam" değerlerini giriniz.</p>
+                <p>ÖRNEK => Enlem: 38.367125  Boylam: 34.049326</p>
+                <div class="form-group">
+                    <label for="addSelectionOperationName">Operasyon Adı</label>
+                    <input type="text" disabled class="form-control" id="addSelectionOperationName" placeholder="Operasyon Adı Giriniz.">
+                </div>
+                <div class="form-group">
+                    <label for="txtLatitude">Enlem</label>
+                    <input type="number" class="form-control" id="txtLatitude" placeholder="Enlem Değeri">
+                </div>
+                <div class="form-group">
+                    <label for="txtLongitude">Boylam</label>
+                    <input type="number" class="form-control" id="txtLongitude" placeholder="Boylam Değeri">
+                </div>
+                 <div class="form-group">
+                    <label for="txtCenterRadius">Çember Yarıçapı</label>
+                    <input type="number" class="form-control" id="txtCenterRadius" placeholder="Yarıçap Değeri">
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-group col-md-offset-9">
+                    <button class="btn btn-primary btn-lg btn-block" id="btnAddTextCenterPoint" onclick="addTextCenterPoint()">Ekle</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+    <!-- Merkez Çemberinin Yarıçapını Değiştirme Penceresi -->
+    <div class="modal fade" id="mdlSetRadius" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Merkez Yarıçapı Değiştirme.</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p> Arama alanını işaretlemek için "Operasyon Yarı Çapı" alanına metre cinsinden bir sayı giriniz. -Örn: 1km için 1000-</p>
+                    <p>Değişiklikleri görebilmek için lütfen web sayfasını yenileyiniz. Ardından operasyonu seçerek yeni verilerin gelmesini sağlayınız.</p>
+                    <div class="form-group">
+                        <label for="txtCenterOperationName">Operasyon Adı</label>
+                        <input type="text" disabled class="form-control" id="txtCenterOperationName" placeholder="Operasyon Adı Giriniz.">
+                    </div>
+                    <div class="form-group">
+                        <label for="txtSetRadius">Operasyon Yarı Çapı</label>
+                        <input type="number" class="form-control" id="txtSetRadius" placeholder="Yarı Çap Giriniz.">
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-offset-9">
+                        <button class="btn btn-primary btn-lg btn-block" id="btnSetRadius" onclick="setRadius()">Değiştir</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+    <!-- Konum Alma Aralığını Belirleme Penceresi -->
+    <div class="modal fade" id="mdlPositioningRange" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Seçilen Operasyon İçin Konum Alma Aralığını Belirleme.</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+                </div>
+            <div class="modal-body">
+                <p>Bir merkez noktası belirlemek için "Enlem" ve "Boylam" değerlerini giriniz.</p>
+                <div class="form-group">
+                    <label for="txtSelectionOperationName">Operasyon Adı</label>
+                    <input type="text" disabled class="form-control" id="txtSelectionOperationName" placeholder="Operasyon Adı Giriniz.">
+                </div>
+                <div class="form-group">
+                    <label for="slcPositioningRange">Konum Alma Aralıkları</label>
+                    <select name="slcPositioningRange" id="slcPositioningRange" class="form-control"></select>
+                </div>
+            
+                <div class="clearfix"></div>
+                <div class="form-group col-md-offset-9">
+                    <button class="btn btn-primary btn-lg btn-block" id="btnPositioningRange" onclick="addPositioningRange()">SEÇ</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+    <!-- Operasyon Seçme Penceresi -->
+    <div class="modal fade" id="mdlOperationSelect" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Oluşturulmuş operasyonlardan birini seçiniz.</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </div>
+                <div class="modal-body">
+                    <p>Bir merkez noktası belirlemek için "Enlem" ve "Boylam" değerlerini giriniz.</p>
+                    <div class="form-group">
+                        <label for="txtSelectionOperationName">Operasyon Adı</label>
+                        <input type="text" disabled class="form-control" id="txtSelectionOperationName" placeholder="Operasyon Adı Giriniz.">
+                    </div>
+                    <div class="form-group">
+                        <label for="slcPositioningRange">Konum Alma Aralıkları</label>
+                        <select name="slcPositioningRange" id="slcPositioningRange" class="form-control"></select>
+                    </div>
+                
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-offset-9">
+                        <button class="btn btn-primary btn-lg btn-block" id="btnPositioningRange" onclick="addPositioningRange()">SEÇ</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+    <!-- Kullanıcılar Penceresi -->
+    <div class="modal fade" id="mdlUsers" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Kullanıcılar</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </div>
+                    <div class="modal-body">
+                        <p>Bir merkez noktası belirlemek için "Enlem" ve "Boylam" değerlerini giriniz.</p>
+                        <div class="form-group">
+                            <label for="txtSelectionOperationName">Operasyon Adı</label>
+                            <input type="text" disabled class="form-control" id="txtSelectionOperationName" placeholder="Operasyon Adı Giriniz.">
+                        </div>
+                        <div class="form-group">
+                            <label for="slcPositioningRange">Konum Alma Aralıkları</label>
+                            <select name="slcPositioningRange" id="slcPositioningRange" class="form-control"></select>
+                        </div>
+                    
+                        <div class="clearfix"></div>
+                        <div class="form-group col-md-offset-9">
+                            <button class="btn btn-primary btn-lg btn-block" id="btnPositioningRange" onclick="addPositioningRange()">SEÇ</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <!-- Sidebar - Başlık -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="afadharita.html">
+                <div class="sidebar-brand-icon ">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">AFAD.Rapor</div>
+            </a>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Yeni Operasyon Başlat -->
+            <li class="nav-item active">
+                <a class="nav-link" id="btnShowMdlNewOperation">
+                    <i class="fas fa-fw fa-plus"></i>
+                    <span>Yeni Operasyon Başlat</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Nav Item - Operasyon Seç -->
+            <li class="nav-item">
+                <a class="nav-link" id="btnShowMdlOperationSelect" title="SEÇİLEN OPERASYON İÇİN MERKEZ NOKTASI BELİRLEME! İlk olarak bir operasyon seçiniz. ">
+                    <i class="fas fa-fw fa-mouse-pointer"></i>
+                    <span>Operasyon Seç</span></a>
+            </li>
+
+            <!-- Nav Item - Kullanıcılar -->
+            <li class="nav-item">
+                <a class="nav-link" id="btnShowMdlUsers" title="İlk olarak bir operasyon seçiniz.">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Kullanıcılar</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading - Harita -->
+            <div class="sidebar-heading">
+                Harita
+            </div>
+
+            <!-- Nav Item - Merkez Noktası Belirleme -->
+            <li class="nav-item">
+                <a class="nav-link" id="btnShowMdlTextCenterPoint" title="SEÇİLEN OPERASYON İÇİN MERKEZ NOKTASI BELİRLEME! İlk olarak bir operasyon seçiniz. ">
+                    <i class="fas fa-fw fa-dot-circle"></i>
+                    <span>Merkez Noktası Belirleme</span></a>
+            </li>
+
+            <!-- Nav Item - Merkez Yarıçapını Değiştir -->
+            <li class="nav-item">
+                <a class="nav-link" id="btnShowMdlSetRadius" title="İlk olarak bir operasyon seçiniz.">
+                    <i class="fas fa-fw fa-circle-notch"></i>
+                    <span>Merkez Yarıçapını Değiştir</span></a>
+            </li>
+
+            <!-- Nav Item - Konum Alma Aralığını Değiştir -->
+            <li class="nav-item">
+                <a class="nav-link" id="btnShowMdlPositioningRange" title="İlk olarak bir operasyon seçiniz.">
+                    <i class="fas fa-fw fa-ruler"></i>
+                    <span>Konum Alma Aralığını Değiştir</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading - Operasyon-->
+            <div class="sidebar-heading">
+                Operasyon
+            </div>
+
+            <!-- Nav Item - Operasyonu Sonlandır -->
+            <li class="nav-item">
+                <a class="nav-link" id="btnEndOperation" title="İlk olarak bir operasyon seçiniz.">
+                    <i class="fas fa-fw fa-stop-circle"></i>
+                    <span>Operasyonu Sonlandır</span></a>
+            </li>
+
+            <!-- Nav Item - Seçili Operasyonu Sil -->
+            <li class="nav-item">
+                <a class="nav-link" id="btnDeleteOperation" title="İlk olarak bir operasyon seçiniz.">
+                    <i class="fas fa-fw fa-trash-alt"></i>
+                    <span>Seçili Operasyonu Sil</span></a>
+            </li>
+
+            <!-- Nav Item - Raporla -->
+            <li class="nav-item">
+                <a class="nav-link" id="btnReport">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Raporla</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <!-- Sidebar Toggler (Sidebar) -->
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Sidebar Toggle (Topbar) -->
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+            <i class="fa fa-bars"></i>
+          </button>
+
+
+                </li>
+
+                </ul>
+
+                </nav>
+
+                <!-- Topbar -->
+                <div>
+
+                    <!-- Begin Page Content -->
+                    <div class="container-fluid">
+
+                        <!-- Page Heading -->
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                            <h1 class="h3 mb-0 text-gray-800">Operasyonu Raporla</h1>
+                        </div>
+
+                        <div class="row">
+
+                            <!-- Earnings (Monthly) Card Example -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-primary shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Kullanıcı Sayısı</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="userCounts">Veritabnından gelen kullanıcı sayısı buraya yansıtılacak</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-users fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Earnings (Annual) Card Example -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-success shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Oluşturulma Tarihi</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="operationStartDate">Operasyonun oluşturulma tarihi veritabnından çekilip buraya yansıtılacak</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tasks Card Example -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-info shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Operasyon Alanı</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="operationZone">Operasyonun alanı veritabnından çekilip buraya yansıtılacak</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-dot-circle fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pending Requests Card Example -->
+                            <div class="col-xl-3 col-md-6 mb-4">
+                                <div class="card border-left-warning shadow h-100 py-2">
+                                    <div class="card-body">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Toplam Aranan Mesafe</div>
+                                                <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalDistance">Tüm kullanıcıların aradığı mesafe toplanıp buraya yazılacak</div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <i class="fas fa-adjust fa-2x text-gray-300"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- /.container-fluid -->
+
+                        <div class="container-fluid">
+
+                            <!-- Page Heading -->
+                            <h1 class="h3 mb-2 text-gray-800">Operasyon Grafikleri</h1>
+                            <p class="mb-4">Aşağıdaki grafiklerde operasyon için alanan toplam alanın zamana oranı ve her kullanıcının toplam aradıkları alanlar gösterilmektedir.
+                                <p>
+
+                                    <!-- Content Row -->
+                                    <div class="row">
+
+                                        <div class="col-xl-8 col-lg-7">
+
+                                            <!-- Area Chart -->
+                                            <div class="card shadow mb-4">
+                                                <div class="card-header py-3">
+                                                    <h6 class="m-0 font-weight-bold text-primary">Metre/Zaman Grafiği</h6>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="chart-area">
+                                                        <canvas id="myAreaChart"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                        <!-- Donut Chart -->
+                                        <div class="col-xl-4 col-lg-5">
+                                            <div class="card shadow mb-4">
+                                                <!-- Card Header - Dropdown -->
+                                                <div class="card-header py-3">
+                                                    <h6 class="m-0 font-weight-bold text-primary">Kullanıcı/Toplam aranan mesafe Grafiği</h6>
+                                                </div>
+                                                <!-- Card Body -->
+                                                <div class="card-body">
+                                                    <div class="chart-pie pt-4">
+                                                        <canvas id="myPieChart"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                        </div>
+
+
+
+                        <!-- Begin Page Content -->
+                        <div class="container-fluid">
+
+                            <!-- Page Heading -->
+                            <h1 class="h3 mb-2 text-gray-800">Operason Rapor Tablosu</h1>
+                            <p class="mb-4">Veritabanından çekilen veriler aşağıdaki tabloya yansıtılacak</p>
+
+                            <!-- DataTales Example -->
+                            <div class="card shadow mb-4">
+                                <div class="card">
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Adı/Soyadı</th>
+                                                    <th>Aramaya Katılma Zamanı</th>
+                                                    <th>Aramadan Ayrılma Zamanı</th>
+                                                    <th>Aradığı Mesafe (m)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Tiger Nixon</td>
+                                                    <td>System Architect</td>
+                                                    <td>Edinburgh</td>
+                                                    <td>61</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Garrett Winters</td>
+                                                    <td>Accountant</td>
+                                                    <td>Tokyo</td>
+                                                    <td>63</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Ashton Cox</td>
+                                                    <td>Junior Technical Author</td>
+                                                    <td>San Francisco</td>
+                                                    <td>66</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Cedric Kelly</td>
+                                                    <td>Senior Javascript Developer</td>
+                                                    <td>Edinburgh</td>
+                                                    <td>22</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Airi Satou</td>
+                                                    <td>Accountant</td>
+                                                    <td>Tokyo</td>
+                                                    <td>33</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Brielle Williamson</td>
+                                                    <td>Integration Specialist</td>
+                                                    <td>New York</td>
+                                                    <td>61</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Herrod Chandler</td>
+                                                    <td>Sales Assistant</td>
+                                                    <td>San Francisco</td>
+                                                    <td>59</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Rhona Davidson</td>
+                                                    <td>Integration Specialist</td>
+                                                    <td>Tokyo</td>
+                                                    <td>55</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Colleen Hurst</td>
+                                                    <td>Javascript Developer</td>
+                                                    <td>San Francisco</td>
+                                                    <td>39</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Sonya Frost</td>
+                                                    <td>Software Engineer</td>
+                                                    <td>Edinburgh</td>
+                                                    <td>23</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- /.container-fluid -->
+
+
+                    </div>
+
+                </div>
+
+                <script>
+                    var city = localStorage.getItem("city");
+                    var operationName = localStorage.getItem("operationName");
+                    getOperationInformation();
+
+                    function getOperationInformation() {
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.onreadystatechange = function() {
+                            if (this.status == 200 && this.readyState == 4) {
+                                var json = JSON.parse(this.responseText);
+
+                                var name = "<td>" + operationName + "</td>";
+                                var startTime = "<td>" + json[0].start_dates + "</td>";
+                                var endTime = "<td>" + json[0].end_date + "</td>";
+                                var radius = "<td>" + json[0].radius + " m" + "</td>";
+
+                                document.getElementById("operationStartDate").innerHTML = startTime;
+                            }
+
+
+                        }
+                        xhttp.open("POST", "get_operation_information.php", true);
+                        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhttp.send("city=" + city + "&operation_name=" + operationName);
+                    }
+                </script>
+
+                <!-- Bootstrap core JavaScript-->
+                <script src="vendor/jquery/jquery.min.js"></script>
+                <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+                <!-- Core plugin JavaScript-->
+                <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+                <!-- Custom scripts for all pages-->
+                <script src="js/sb-admin-2.min.js"></script>
+
+                <!-- Page level plugins -->
+                <script src="vendor/chart.js/Chart.min.js"></script>
+
+                <!-- Page level custom scripts -->
+                <script src="js/chart-area-demo.js"></script>
+                <script src="js/chart-pie-demo.js"></script>
+
+</body>
+
+</html>

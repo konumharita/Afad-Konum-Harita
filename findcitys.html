@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" href="login/vendor/bootstrap/css/bootstrap.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="login/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="login/fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="login/vendor/animate/animate.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="login/vendor/css-hamburgers/hamburgers.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="login/vendor/animsition/css/animsition.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="login/vendor/select2/select2.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="login/vendor/daterangepicker/daterangepicker.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="login/css/util.css">
+    <link rel="stylesheet" type="text/css" href="login/css/main.css">
+    <link href="login/css/styles.css" rel="stylesheet" />
+    <!--===============================================================================================-->
+    <!-- Font Awesome icons (free version)-->
+    <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css" />
+
+    <title>Şehir Tespiti</title>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        body {
+            font-size: 120%;
+            background: #303033;
+        }
+        
+        .city-header {
+            border: 1px solid #B0C4DE;
+            border-radius: 10px 10px 0px 0px;
+            border-bottom: none;
+            background: #5F9EA0;
+            width: 40%;
+            text-align: center;
+            margin: 50px auto 0px;
+            color: white;
+            padding: 20px;
+        }
+        
+        .input {
+            margin: 10px 0px 10px 0px;
+        }
+        
+        form,
+        .content {
+            width: 40%;
+            padding: 20px;
+            margin: 0px auto;
+            background: #303033;
+        }
+        
+        .input label {
+            display: block;
+            text-align: left;
+            margin: 3px;
+        }
+        
+        .input input,
+        select {
+            height: 30px;
+            width: 93%;
+            padding: 5px 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #B0C4DE;
+        }
+        /* .btn {
+            padding: 10px;
+            font-size: 15px;
+            color: white;
+            background: #5F9EA0;
+            border: none;
+            border-radius: 5px;
+        }    */
+    </style>
+
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyAsElLOT3HQ4ENQhmoY9PRH8s3EkdGhUF8"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+
+</head>
+
+<body onload="initialize()">
+    <div class="limiter">
+        <div class="container-login100">
+            <div class="wrap">
+                <form action="afadharita.html" class="login100-form validate-form" style="background-color: #303033;">
+                    <span class="login100-form-title p-b-34" style="color: white;">
+						ŞEHİR TESPİTİ
+					</span>
+
+                    <div class="wrap-input100 rs1-wrap validate-input m-b-20">
+                        <input id="city" class="input100" type="text">
+                        <span class="focus-input100"></span>
+                    </div>
+
+
+                    <!--
+               <div class="input">
+                <label for="institution">Kurum </label>
+                <select id="institution"></select>
+            </div>
+        -->
+
+
+
+                    <div class="container-login100-form-btn">
+                        <button id="btnSelection" onclick="saveCity()" class="btn btn-xl btn-outline-light" style="width: inherit;">ONAYLA</button>
+                    </div>
+                </form>
+
+                <div class="login100-more" style="background-image: url('login/images/banner.png');"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var geocoder;
+        var city;
+
+        var apiGeolocationSuccess = function(position) {
+            codeLatLng(position.coords.latitude, position.coords.longitude);
+        };
+
+        var tryAPIGeolocation = function() {
+            jQuery.post("https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyAsElLOT3HQ4ENQhmoY9PRH8s3EkdGhUF8", function(success) {
+                    apiGeolocationSuccess({
+                        coords: {
+                            latitude: success.location.lat,
+                            longitude: success.location.lng
+                        }
+                    });
+                })
+                .fail(function(err) {
+                    alert("API Geolocation error! \n\n" + err);
+                });
+        };
+
+        var browserGeolocationSuccess = function(position) {
+            codeLatLng(position.coords.latitude, position.coords.longitude);
+        };
+
+        var browserGeolocationFail = function(error) {
+            switch (error.code) {
+                case error.TIMEOUT:
+                    alert("Browser geolocation error !\n\nTimeout.");
+                    break;
+                case error.PERMISSION_DENIED:
+                    if (error.message.indexOf("Only secure origins are allowed") == 0) {
+                        tryAPIGeolocation();
+                    }
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Browser geolocation error !\n\nPosition unavailable.");
+                    break;
+            }
+        };
+
+        var tryGeolocation = function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    browserGeolocationSuccess,
+                    browserGeolocationFail, {
+                        maximumAge: 50000,
+                        timeout: 20000,
+                        enableHighAccuracy: true
+                    });
+            }
+        };
+
+        tryGeolocation();
+
+        function initialize() {
+            geocoder = new google.maps.Geocoder();
+        }
+
+        function codeLatLng(lat, lng) {
+            var latlng = new google.maps.LatLng(lat, lng);
+            geocoder.geocode({
+                'latLng': latlng
+            }, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    if (results[1]) {
+                        //alert(results[0].formatted_address);
+                        for (var i = 0; i < results[0].address_components.length; i++) {
+                            for (var b = 0; b < results[0].address_components[i].types.length; b++) {
+                                if (results[0].address_components[i].types[b] == "administrative_area_level_1") {
+                                    city = results[0].address_components[i];
+
+                                    break;
+                                }
+                            }
+                        }
+
+                        document.getElementById("city").value = city.long_name;
+                        localStorage.setItem("lat", lat.toString());
+                        localStorage.setItem("lng", lng.toString());
+
+                    } else {
+                        alert("Şehir tespit edilemedi.");
+                    }
+                } else {
+                    //alert("hata: "+status);
+                }
+            });
+        }
+
+        function saveCity() {
+            var upperCityNameString = upperCityName(city.long_name); // Şehir harflerini düzenleme
+            localStorage.setItem("city", upperCityNameString);
+        }
+
+        function upperCityName(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase(); // İlk harf büyük sonrası küçük
+        }
+    </script>
+    <!--===============================================================================================-->
+    <script src="login/vendor/jquery/jquery-3.2.1.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="login/vendor/animsition/js/animsition.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="login/vendor/bootstrap/js/popper.js"></script>
+    <script src="login/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="login/vendor/select2/select2.min.js"></script>
+    <script>
+        $(".selection-2").select2({
+            minimumResultsForSearch: 20,
+            dropdownParent: $('#dropDownSelect1')
+        });
+    </script>
+    <!--===============================================================================================-->
+    <script src="login/endor/daterangepicker/moment.min.js"></script>
+    <script src="login/vendor/daterangepicker/daterangepicker.js"></script>
+    <!--===============================================================================================-->
+    <script src="login/vendor/countdowntime/countdowntime.js"></script>
+    <!--===============================================================================================-->
+    <script src="login/js/main.js"></script>
+</body>
+
+</html>

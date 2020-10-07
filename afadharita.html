@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>AFAD.Harita</title>
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+            * element that contains the map. */
+        
+        #divMap {
+            float: right;
+            height: 100%;
+            width: 100%;
+        }
+        
+        #divOperation {
+            float: left;
+            height: 100%;
+            width: 20%;
+        }
+        
+        #table {
+            float: left;
+        }
+        /* Optional: Makes the sample page fill the window. */
+        
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #maintable td.red {
+            color: red
+        }
+        
+        #maintable td.green {
+            color: green
+        }
+        
+        #maintable td.tıkla {
+            cursor: pointer;
+            width: 170px;
+        }
+        
+        .sidebar .nav-item .nav-link2 {
+            
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 1rem;
+            color: #fff
+        }
+        /* Modal içindeki tablonun style kodları */
+        
+        .table-wrapper {
+            width: 700px;
+            margin: 30px auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+        }
+        
+        .table-title {
+            padding-bottom: 10px;
+            margin: 0 0 10px;
+        }
+        
+        .table-title h2 {
+            margin: 6px 0 0;
+            font-size: 22px;
+        }
+        
+        .table-title .add-new {
+            float: right;
+            height: 30px;
+            font-weight: bold;
+            font-size: 12px;
+            text-shadow: none;
+            min-width: 100px;
+            border-radius: 50px;
+            line-height: 13px;
+        }
+        
+        .table-title .add-new i {
+            margin-right: 4px;
+        }
+        
+        table.table {
+            table-layout: fixed;
+        }
+        
+        table.table tr th,
+        table.table tr td {
+            border-color: #e9e9e9;
+        }
+        
+        table.table th i {
+            font-size: 13px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+        
+        table.table th:last-child {
+            width: 100px;
+        }
+        
+        table.table td a {
+            cursor: pointer;
+            display: inline-block;
+            margin: 0 5px;
+            min-width: 24px;
+        }
+        
+        table.table td a.add {
+            color: #27C46B;
+        }
+        
+        table.table td a.edit {
+            color: #FFC107;
+        }
+        
+        table.table td a.delete {
+            color: #E34724;
+        }
+        
+        table.table td i {
+            font-size: 19px;
+        }
+        
+        table.table td a.add i {
+            font-size: 24px;
+            margin-right: -1px;
+            position: relative;
+            top: 3px;
+        }
+        
+        table.table .form-control {
+            height: 32px;
+            line-height: 32px;
+            box-shadow: none;
+            border-radius: 2px;
+        }
+        
+        table.table .form-control.error {
+            border-color: #f50000;
+        }
+        
+        table.table td .add {
+            display: none;
+        }
+        .clicker{
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+
+<body id="page-top">
+
+    <!--   Yeni Bir Operasyon Oluşturma Penceresi -->
+    <div class="modal fade" id="mdlNewOperation" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Yeni Operasyon Başlat</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p> Lütfen yeni bir operasyon başlatmadan önce bir operasyon adı giriniz.</p>
+                    <div class="form-group">
+                        <label for="txtNewOperationName">Operasyon Adı:</label>
+                        *<input type="text" class="form-control" id="txtNewOperationName" placeholder="Operasyon Adı Giriniz." >
+                    </div>
+                    <div class="form-group">
+                        <label for="txtWantedName">İsim:</label>
+                        <input type="text" class="form-control" id="txtWantedName" placeholder="Aranan Kişinin Adını Giriniz.">
+                    </div>
+                    <div class="form-group">
+                        <label for="txtWantedSurname">Soyisim:</label>
+                        <input type="text" class="form-control" id="txtWantedSurname" placeholder="Aranan Kişinin Soyadını Giriniz.">
+                    </div>
+                    <div class="form-group">
+                        <label for="txtWantedAge">Yaş:</label>
+                        <input type="text" class="form-control" id="txtWantedAge" placeholder="Aranan Kişinin Yaşını Giriniz.">
+                    </div>
+                    <div class="form-group">
+                        <label for="txtWantedGender">Cinsiyet:</label>
+                        <select class="form-control" id="txtWantedGender" title="Aranan Kişinin Cinsiyetini Seçiniz">
+                            <option>Erkek</option>
+                            <option>Kadın</option>          
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="txtWantedLength">Boy:</label>
+                        <input type="number" class="form-control" id="txtWantedLength" placeholder="Aranan Kişinin Boyunu Giriniz.">
+                    </div>
+                    <div class="form-group">
+                        <label for="txtWantedWeight">Kilo:</label>
+                        <input type="number" class="form-control" id="txtWantedWeight" placeholder="Aranan Kişinin Kilosunu Giriniz.">
+                    </div>
+                    <div class="form-group">
+                        <label for="txtWantedMoreInformation">Daha Fazla Bilgi:</label>
+                        <input type="text" class="form-control" id="txtWantedMoreInformation" placeholder="Aranan Kişi Hakkında Daha Fazla Bilgi">
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-offset-9">
+                        <button class="btn btn-primary btn-lg btn-block"  id="btnAddOperation" onclick="addNewOperation()">Operasyon Başlat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Elle Merkez Noktası Belirleme Penceresi -->
+    <div class="modal fade" id="mdlTextCenterPoint" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Seçilen Operasyon İçin Merkez Noktası Belirleme.</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+                </div>
+            <div class="modal-body">
+                <p>Bir merkez noktası belirlemek için "Enlem" ve "Boylam" değerlerini giriniz.</p>
+                <p>ÖRNEK => Enlem: 38.367125  Boylam: 34.049326</p>
+                <div class="form-group">
+                    <label for="addSelectionOperationName">Operasyon Adı</label>
+                    <input type="text" disabled class="form-control" id="addSelectionOperationName" placeholder="Operasyon Adı Giriniz.">
+                </div>
+                <div class="form-group">
+                    <label for="txtLatitude">Enlem</label>
+                    <input type="number" class="form-control" id="txtLatitude" placeholder="Enlem Değeri">
+                </div>
+                <div class="form-group">
+                    <label for="txtLongitude">Boylam</label>
+                    <input type="number" class="form-control" id="txtLongitude" placeholder="Boylam Değeri">
+                </div>
+                 <div class="form-group">
+                    <label for="txtCenterRadius">Çember Yarıçapı</label>
+                    <input type="number" class="form-control" id="txtCenterRadius" placeholder="Yarıçap Değeri">
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-group col-md-offset-9">
+                    <button class="btn btn-primary btn-lg btn-block" id="btnAddTextCenterPoint" onclick="addTextCenterPoint()">Ekle</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+    <!-- Merkez Çemberinin Yarıçapını Değiştirme Penceresi -->
+    <div class="modal fade" id="mdlSetRadius" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Merkez Yarıçapı Değiştirme.</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p> Arama alanını işaretlemek için "Operasyon Yarı Çapı" alanına metre cinsinden bir sayı giriniz. -Örn: 1km için 1000-</p>
+                    <p>Değişiklikleri görebilmek için lütfen web sayfasını yenileyiniz. Ardından operasyonu seçerek yeni verilerin gelmesini sağlayınız.</p>
+                    <div class="form-group">
+                        <label for="txtCenterOperationName">Operasyon Adı</label>
+                        <input type="text" disabled class="form-control" id="txtCenterOperationName" placeholder="Operasyon Adı Giriniz.">
+                    </div>
+                    <div class="form-group">
+                        <label for="txtSetRadius">Operasyon Yarı Çapı</label>
+                        <input type="number" class="form-control" id="txtSetRadius" placeholder="Yarı Çap Giriniz.">
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-offset-9">
+                        <button class="btn btn-primary btn-lg btn-block" id="btnSetRadius" onclick="setRadius()">Değiştir</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+    <!-- Konum Alma Aralığını Belirleme Penceresi -->
+    <div class="modal fade" id="mdlPositioningRange" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Seçilen Operasyon İçin Konum Alma Aralığını Belirleme.</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+                </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="txtSelectionOperationName">Operasyon Adı</label>
+                    <input type="text" disabled class="form-control" id="txtSelectionOperationName" placeholder="Operasyon Adı Giriniz.">
+                </div>
+                <div class="form-group">
+                    <label for="slcPositioningRange">Konum Alma Aralıkları</label>
+                    <select name="slcPositioningRange" id="slcPositioningRange" class="form-control"></select>
+                </div>
+            
+                <div class="clearfix"></div>
+                <div class="form-group col-md-offset-9">
+                    <button class="btn btn-primary btn-lg btn-block" id="btnPositioningRange" onclick="addPositioningRange()">SEÇ</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+    <!-- Operasyon Seçme Penceresi -->
+    <div class="modal fade" id="mdlOperationSelect" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Oluşturulmuş operasyonlardan birini seçiniz.</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </div>
+                <div class="modal-body">
+                    <div class="container-lg">
+                        <div class="table-responsive">
+                            <div class="table-wrapper">
+                                <div class="table-title">
+                                    <div class="row">
+                                        <div class="col-sm-8"><b>Operasyonlar</b></div>
+            </div>
+        </div>
+        <table class="listOperation table table-bordered">
+            <thead>
+                <tr>
+                    <th>Operasyon Adı</th>
+                    <th>Oluşturulma Tarihi</th>
+                    <th></th>
+                </tr>
+            </thead>
+                <tbody>
+                </tbody>
+        </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="form-group col-md-offset-9">
+    </div>
+    </div>
+
+    </div>
+    </div>
+    </div>
+
+    <!-- Kullanıcılar Penceresi -->
+    <div class="modal fade" id="mdlUsers" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Operasyona Katılan Kullanıcılar</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </div>
+                <div class="modal-body">
+                    <div class="container-lg">
+                        <div class="table-responsive">
+                            <div class="table-wrapper">
+                                <div class="table-title">
+                                    <div class="row">
+                                        <div class="col-sm-8"><b>Kullanıcılar</b></div>
+            </div>
+        </div>
+        <table class="todoListActive listUsers table table-bordered" id="maintable">
+            <thead>
+                <tr>
+                    <th style="width: 170px;">Kullanıcı Adı</th>  
+                    <th>Durum</th>
+                    <th></th>
+                    
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <table class="todoListPassive listUsers table table-bordered" id="maintable">
+            
+            <tbody></tbody>
+        </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="form-group col-md-offset-9">
+    </div>
+    </div>
+
+    </div>
+    </div>
+    </div>
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <!-- Sidebar - Başlık -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="afadharita.html">
+                <div class="sidebar-brand-icon ">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">AFAD.Harita</div>
+            </a>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Yeni Operasyon Başlat -->
+            <li class="nav-item active clicker">
+                <a class="nav-link" id="btnShowMdlNewOperation" onclick="showMdlNewOperation()">
+                    <i class="fas fa-fw fa-plus"></i>
+                    <span>Yeni Operasyon Başlat</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Nav Item - Operasyon Seç -->
+            <li class="nav-item clicker">
+                <a class="nav-link" id="btnShowMdlOperationSelect" title="Operasyon Seçimi"  onclick="showMdlOperationSelect()">
+                    <i class="fas fa-fw fa-mouse-pointer"></i>
+                    <span>Operasyon Seç</span></a>
+            </li>
+
+            <!-- Nav Item - Kullanıcılar -->
+            <li class="nav-item clicker">
+                <a class="nav-link" id="btnShowMdlUsers" title="İlk olarak bir operasyon seçiniz."  >
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Kullanıcılar</span></a>
+            </li>
+
+            <li style="background-color: #1e49ca;" class="nav-item ">
+                <a class="nav-link" id="userStatus">
+                   <b><span style="color: #98d754; font-size: 16px;" id="txtActiveCount" >Aktif:<span>0</span></span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="color: #ff0000;font-size: 16px;" id="txtPassiveCount">Pasif:<span>0</span></span></b>
+                    </a>
+            </li>
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading - Harita -->
+            <div class="sidebar-heading">
+                Harita
+            </div>
+
+            <!-- Nav Item - Merkez Noktası Belirleme -->
+            <li class="nav-item clicker">
+                <a class="nav-link" id="btnShowMdlTextCenterPoint" title="SEÇİLEN OPERASYON İÇİN MERKEZ NOKTASI BELİRLEME! İlk olarak bir operasyon seçiniz. ">
+                    <i class="fas fa-fw fa-dot-circle"></i>
+                    <span>Merkez Noktası Belirleme</span></a>
+            </li>
+
+            <!-- Nav Item - Merkez Yarıçapını Değiştir -->
+            <li class="nav-item clicker">
+                <a class="nav-link" id="btnShowMdlSetRadius" title="İlk olarak bir operasyon seçiniz.">
+                    <i class="fas fa-fw fa-circle-notch"></i>
+                    <span>Merkez Yarıçapını Değiştir</span></a>
+            </li>
+
+            <!-- Nav Item - Konum Alma Aralığını Değiştir -->
+            <li class="nav-item clicker">
+                <a class="nav-link" id="btnShowMdlPositioningRange" title="İlk olarak bir operasyon seçiniz.">
+                    <i class="fas fa-fw fa-ruler"></i>
+                    <span>Konum Alma Aralığını Değiştir</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading - Operasyon-->
+            <div class="sidebar-heading">
+                Operasyon
+            </div>
+
+            <!-- Nav Item - Operasyonu Sonlandır -->
+            <li class="nav-item clicker">
+                <a class="nav-link" id="btnEndOperation" title="İlk olarak bir operasyon seçiniz.">
+                    <i class="fas fa-fw fa-stop-circle"></i>
+                    <span>Operasyonu Sonlandır</span></a>
+            </li>
+
+            <!-- Nav Item - Seçili Operasyonu Sil -->
+            <li class="nav-item clicker">
+                <a class="nav-link" id="btnDeleteOperation" title="İlk olarak bir operasyon seçiniz.">
+                    <i class="fas fa-fw fa-trash-alt"></i>
+                    <span>Seçili Operasyonu Sil</span></a>
+            </li>
+
+            <!-- Nav Item - Raporla -->
+            <li class="nav-item clicker">
+                <a class="nav-link" id="btnReport" id="btnReport">
+                    <i class="fas fa-fw fa-table"></i>
+                    <span>Raporla</span></a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <!-- Sidebar Toggler (Sidebar) -->
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+                </div>
+
+                </ul>
+                <!-- End of Sidebar -->
+
+                <!-- Content Wrapper -->
+                <div id="content-wrapper" class="d-flex flex-column">
+
+                    <!-- Main Content -->
+                    <div id="content">
+                        <!-- Sidebar Toggle (Topbar) -->
+                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+            <i class="fa fa-bars"></i>
+          </button>
+
+
+                        </li>
+
+                        </ul>
+
+                        </nav>
+
+                        <!-- Topbar -->
+                        <div id="divMap">
+                            <!-- HARİTA -->
+                        </div>
+                        <!-- /.container-fluid -->
+
+                    </div>
+
+                </div>
+
+                <!-- Kütüphaneler -->
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
+                <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" integrity="sha256-xNjb53/rY+WmG+4L6tTl9m6PpqknWZvRt0rO1SRnJzw=" crossorigin="anonymous"></script>
+                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.js"></script>
+
+
+
+                <script>
+                    //---- Konum Alma Aralığı Combobox Doldurma İşlemleri -----------------------------------------------------------------------------------------
+                    $('#slcPositioningRange').append($("<option></option>").text("30"));
+                    $('#slcPositioningRange').append($("<option></option>").text("60"));
+                    $('#slcPositioningRange').append($("<option></option>").text("100"));
+
+                    // Değişken tanımlamaları
+
+                    var selectedOperationID;
+                    var operationName;
+                    var markers = [];
+                    var centerMarker = [];
+                    var centerCircle = [];
+                    var lastLocationAddCircle = [];
+                    var map;
+                    var marketLatLng;
+                    var deleteMarkerId;
+                    var lastId = 0;
+                    var active = 0;
+                    var passive = 0;
+                    var cells = []; // Kullanıcılar tablosundaki 'tıkla id'lerini barındıran dizi. Bu dizi sayesinde kullanıcılara tıklama özelliği veriyoruz.
+                    var selectUser;
+                    var city;
+                    var radius; // Mevcut merkez yarıçapı için
+
+
+
+                    //Operasyonlar Combobox'ını doldurma  
+                    function getOperations() {
+                        city = localStorage.getItem("city");
+
+                        var parent = $(".listOperation").children("tbody");
+                        parent.html('');
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.onreadystatechange = function() {
+                            if (this.readyState == 4 && this.status == 200) {
+                                var myObj = JSON.parse(this.responseText);
+                                for (var i = 0; i < myObj.length; i++) {
+                                    var operationName = myObj[i].operation_name;
+                                    var name = "<td>" + operationName + "</td>";
+                                    var date = "<td>" + myObj[i].start_dates + "</td>";
+                                    var button = "<td> <button class='btn btn-primary' id='btnTableSelect' onclick='selectionOperation(" + myObj[i].id + ")'> SEÇ </button> </td>";
+                                    parent.append("<tr>" + name + date + button + "</tr>");
+                                }
+
+
+                            }
+                        };
+                        xhttp.open("POST", "get_operations_web.php", true);
+                        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
+                        xhttp.send("city=" + city);
+                    }
+
+
+                    function selectionOperation(id) {
+                        addButtonsOnClickFunction();
+
+                        clearOverlays();
+                        markers = [];
+                        centerMarker = [];
+                        centerCircle = [];
+                        lastLocationAddCircle = [];
+                        lastId = 0;
+                        selectedOperationID = id;
+                        findOperationName(selectedOperationID);
+                        $("#mdlOperationSelect").modal('hide');
+
+                    }
+                    
+                    // Sol menü butonlarına operasyon seçimi sonrasıda onclick özelliklerini ekleme
+                    function addButtonsOnClickFunction(){
+                        //Kullanıcılar penceresi
+                        document.getElementById("btnShowMdlUsers").onclick=function(){
+                            getUserActive();
+                            $("#mdlUsers").modal();
+                        };
+
+                        // Arama yarıçapını değiştirme penceresi
+                        document.getElementById("btnShowMdlSetRadius").onclick = function(){
+                            getCenterRadius();
+                            $('#mdlSetRadius').on('shown.bs.modal', function() {
+
+                                $('#txtCenterOperationName').val(operationName);
+
+                            })
+                        };
+
+                        // Elle merkez noktası ve arama yarıçapı girme penceresi
+                        document.getElementById("btnShowMdlTextCenterPoint").onclick = function(){  
+                            $('#mdlTextCenterPoint').on('shown.bs.modal', function() {
+
+                                $('#addSelectionOperationName').val(operationName);
+
+                            })
+                            $("#mdlTextCenterPoint").modal();
+                    
+                        };
+
+                        // Konum alma aralığı belirleme penceresi
+                        document.getElementById("btnShowMdlPositioningRange").onclick = function(){      
+                            $('#mdlPositioningRange').on('shown.bs.modal', function() {
+
+                                $('#txtSelectionOperationName').val(operationName);
+
+                            })
+                            $("#mdlPositioningRange").modal();
+                    
+                        };
+
+                        //Seçili operasyonu sonlandırma işlemi
+                        document.getElementById("btnEndOperation").onclick = function(){
+                            var answer = confirm("'" + operationName + "' adlı operasyon sonlandırılsın mı? " + "\n" + "Bu işlem sonrasında kullanıcılar bu operasyona ulaşamayacaktır.");
+                            if (answer == true) {
+                                var endDate = new Date();
+                                var xhttp = new XMLHttpRequest();
+                                xhttp.open("POST", "set_operation_state.php", true);
+                                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                                xhttp.send("id=" + selectedOperationID + "&state=0&end_date=" + endDate.toLocaleString());
+                            }
+                        };
+                        
+                        //Seçili operasyonu veritabanından silme
+                        document.getElementById("btnDeleteOperation").onclick = function(){                          
+                            var reply = confirm("'" + operationName + "' adlı operasyon silinsin mi?" + "\n" + "Bu işlem sonrasında bu operasyona ait verilere ulaşılamayacaktır.");
+                            if (reply == true) {
+                                var xhttp = new XMLHttpRequest();
+                                xhttp.open("POST", "delete_full_operations.php", true);
+                                xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                                xhttp.send("id=" + selectedOperationID + "&operation=" + operationName + "&city=Bursa");
+                            }
+                        };
+
+                        //Raporlama sayfasına geçiş
+                        var a = document.getElementById("btnReport");
+                        a.href = "report.html";
+
+                    
+                    }
+                    //Seçilen Operasyonun Adını Öğrenme
+
+                    function findOperationName(id) {
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.onreadystatechange = function() {
+                            if (this.readyState == 4 && this.status == 200) {
+                                var myObj = JSON.parse(this.responseText);
+                                for (var i = 0; i < myObj.length; i++) {
+                                    operationName = myObj[i].operation_name;
+                                }
+                                localStorage.setItem("operationName",operationName);
+                                getCenterMarkerAndDrawCircle(); // Merkez Noktasını ve Çemberini Çizdirme
+                                getLocations();
+
+                            }
+                        };
+                        xhttp.open("POST", "get_operation_name.php", true);
+                        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
+                        xhttp.send("id=" + selectedOperationID);
+                    }
+
+                    // Yeni operasyon oluşturma penceresi
+                    function showMdlNewOperation() {
+                        $("#mdlNewOperation").modal();
+                    } 
+
+                    // Operason seçme penceresi
+                    function showMdlOperationSelect() {
+                        getOperations();
+                        $("#mdlOperationSelect").modal();
+                    }
+  
+                    //Yeni operayonu veritabanına kayıt etme
+                    function addNewOperation() {
+
+                        var nowDate = new Date();
+                        if ($("#txtNewOperationName").val() == "") {
+
+                        } else {
+                            var xhttp = new XMLHttpRequest();
+                            xhttp.open("POST", "insert_operations.php", true);
+                            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                            xhttp.send("city=" + city + "&operation_name=" + $("#txtNewOperationName").val() + "&start_date=" + nowDate.toLocaleString() +
+                                "&state=1&wanted_name=" + $("#txtWantedName").val() + "&wanted_surname=" + $("#txtWantedSurname").val() + "&wanted_gender=" +
+                                $("#txtWantedGender option:selected").text() + "&wanted_length=" + $("#txtWantedLength").val() + "&wanted_weight=" + $("#txtWantedWeight").val() +
+                                "&wanted_age=" + $("#txtWantedAge").val() + "&wanted_more_information=" + $("#txtWantedMoreInformation").val() + "&positioning_range=30000");
+                            document.getElementById("txtNewOperationName").value = " ";
+                            $("#mdlNewOperation").modal('hide');
+                        }
+                    }
+
+                    // Harita'ya tıklama olayını takiben tıklanan noktanın koordinatlarını veritabanına ekleme
+                    function addCenterPoint() {
+                        placeMarker(marketLatLng, map);
+
+                        var centerCircle = new google.maps.Circle({
+                            strokeColor: '#FF0000',
+                            strokeOpacity: 0.4,
+                            strokeWeight: 2,
+                            fillColor: '#FF0000',
+                            map: map,
+                            center: marketLatLng,
+                            radius: parseInt($("#txtRadius").val())
+                        });
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.open("POST", "add_center_point.php", true);
+                        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhttp.send("id=" + selectedOperationID + "&latitude=" + marketLatLng.lat().toString() +
+                            "&longitude=" + marketLatLng.lng().toString() + "&radius=" + $("#txtRadius").val());
+                        $("#mdlMapClickCenterPoint").modal('hide');
+                    }
+                    
+                    // Mevcut merkez yarıçapını çağırma
+                    function getCenterRadius(){
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.onreadystatechange = function() {
+                            if (this.readyState == 4 && this.status == 200) {
+                                var myObj = JSON.parse(this.responseText);
+                               
+                                    radius = myObj[0].radius;
+                                    
+                                    $('#mdlSetRadius').on('shown.bs.modal', function() {
+
+                                        $('#txtSetRadius').val(radius);
+                                        
+                                    })
+                                    $("#mdlSetRadius").modal();
+                                
+                            }
+                        };
+                        xhttp.open("POST", "get_radius.php", true);
+                        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhttp.send("id="+selectedOperationID);
+                        
+                    }
+                    // Arama çemberinin yarıçapını veritabanında güncelleme işlemi
+                    function setRadius() {
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.open("POST", "set_radius.php", true);
+                        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhttp.send("id=" + selectedOperationID + "&radius=" + $("#txtSetRadius").val());
+                        $("#mdlSetRadius").modal('hide');
+                    }
+
+                    //Elle belirlenen merkez koordinatları ve arama yarıçapının veritabanına eklenmesi
+                    function addTextCenterPoint() {
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.open("POST", "add_center_point.php", true);
+                        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhttp.send("id=" + selectedOperationID + "&latitude=" + $("#txtLatitude").val() + "&longitude=" + $("#txtLongitude").val() + "&radius=" + $("#txtCenterRadius").val());
+                        $("#mdlTextCenterPoint").modal('hide');
+                    }
+
+                    // Belirlenen konum alma aralığının veritabanına eklenmesi
+                    function addPositioningRange() {
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.open("POST", "add_positioning_range.php", true);
+                        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhttp.send("id=" + selectedOperationID + "&positioning_range=" + $("#slcPositioningRange option:selected").text());
+                        $("#mdlPositioningRange").modal('hide');
+                    }
+
+                  
+
+                    
+
+                    function getLocations() {
+
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.onreadystatechange = function() {
+
+                            if (this.readyState == 4 && this.status == 200) {
+                                var location = JSON.parse(this.responseText);
+                                for (var i = 0; i < location.length; i++) {
+                                    var id = location[i].id;
+                                    var user = location[i].user;
+                                    var lat = location[i].latitude;
+                                    var lng = location[i].longitude;
+                                    var color = location[i].map_color;
+                                    var hour = location[i].hour;
+                                    var tel = location[i].telephone;
+                                    var radio = location[i].radio_code;
+
+                                    //-------------------------------------
+
+                                    var marker = new google.maps.Marker({
+                                        position: {
+                                            lat: parseFloat(lat),
+                                            lng: parseFloat(lng)
+                                        },
+                                        title: "Kullanıcı= " + user + "\n" + "Saat= " + hour + "\n" + "Telefon= " + tel + "\n" +
+                                            "Telsiz Kodu= " + radio + "\n" + "Enlem= " + lat + "\n" + "Boylam= " + lng,
+                                        id: id,
+                                        icon: {
+                                            path: 'M0-48c-9.8 0-17.7 7.8-17.7 17.4 0 15.5 17.7 30.6 17.7 30.6s17.7-15.4 17.7-30.6c0-9.6-7.9-17.4-17.7-17.4z',
+                                            strokeColor: color,
+                                            scale: 0.4,
+                                            fillColor: color,
+                                            fillOpacity: 1
+                                        },
+                                        map: map
+                                    });
+
+                                    //-----------------------------------
+                                    lastLocationDeleteCircle(user);
+                                    var lastLocationCircle = new google.maps.Circle({
+                                        strokeColor: color,
+                                        strokeOpacity: 0.4,
+                                        id: user,
+                                        strokeWeight: 2,
+                                        fillColor: color,
+                                        fillOpacity: 0.9,
+                                        center: {
+                                            lat: parseFloat(lat),
+                                            lng: parseFloat(lng)
+                                        },
+                                        radius: 3,
+                                        map: map
+                                    });
+                                    lastLocationAddCircle.push(lastLocationCircle);
+                                    addInfoWindow(marker, id);
+
+
+                                    markers.push(marker);
+                                    lastId = id;
+
+
+                                }
+                                setTimeout(getLocations, 10000);
+                            }
+
+                        };
+                        xhttp.open("POST", "get_locations.php", true);
+                        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhttp.send("city=" + city + "&operation=" + operationName + "&last_id=" + lastId);
+
+
+                    }
+
+                    function lastLocationDeleteCircle(userId) {
+                        for (i = 0; i < lastLocationAddCircle.length; i++) {
+                            if (lastLocationAddCircle[i].id == userId) {
+                                lastLocationAddCircle[i].setMap(null);
+                            }
+                        }
+
+                    }
+
+                    function addInfoWindow(marker, id) {
+                        var content = "<button type = 'button' onclick = 'deleteUserMarker()'>SİL</button>";
+                        var infowindow = new google.maps.InfoWindow({
+                            content: content
+                        });
+                        //--------------------------------------
+                        google.maps.event.addListener(marker, 'click', function() {
+                            deleteMarkerId = id;
+                            infowindow.open(map, marker);
+                        });
+
+                    }
+
+                    function deleteUserMarker() {
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.open("POST", "delete_select_locations.php", true);
+                        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhttp.send("id=" + deleteMarkerId);
+                        for (i = 0; i < markers.length; i++) {
+                            if (markers[i].id == deleteMarkerId) {
+                                markers[i].setMap(null);
+                            }
+
+                        }
+                    }
+
+                    function getCenterMarkerAndDrawCircle() {
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.onreadystatechange = function() {
+                            if (this.readyState == 4 && this.status == 200) {
+                                var centerData = this.responseText;
+                                var obj = JSON.parse(centerData);
+
+                                var centerLat = obj[0].latitude;
+                                var centerLng = obj[0].longitude;
+                                var radius = obj[0].radius;
+
+
+                                var centerMark = new google.maps.Marker({
+                                    position: {
+                                        lat: parseFloat(centerLat),
+                                        lng: parseFloat(centerLng)
+                                    },
+                                    title: "Enlem= " + centerLat + "\n" + "Boylam= " + centerLng + "\n" + "Yarıçap= " + radius,
+                                    label: operationName,
+                                    map: map
+                                });
+                                centerMarker.push(centerMark);
+
+                                var centerCircles = new google.maps.Circle({
+                                    center: {
+                                        lat: parseFloat(centerLat),
+                                        lng: parseFloat(centerLng)
+                                    },
+                                    strokeColor: '#FF0000',
+                                    strokeOpacity: 0.4,
+                                    strokeWeight: 2,
+                                    fillColor: '#FF0000',
+                                    fillOpacity: 0.1,
+                                    radius: parseInt(radius),
+                                    map: map
+                                });
+                                centerCircle.push(centerCircles);
+                            }
+                        }
+                        xhttp.open("POST", "get_operation_center_point.php", true);
+                        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhttp.send("city=" + city + "&operation=" + operationName);
+
+                    }
+
+                    function getUserActive() {
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.onreadystatechange = function() {
+                            if (this.readyState == 4 && this.status == 200) {
+                                var instantSituationData = this.responseText;
+                                var JsonObj = JSON.parse(instantSituationData);
+
+                                var $parentActive = $(".todoListActive").children("tbody");
+                                $parentActive.html('');
+                                active = 0;
+                                document.getElementById("txtActiveCount").innerHTML = "Aktif: 0";
+
+                                var $parentPassive = $(".todoListPassive").children("tbody");
+                                $parentPassive.html('');
+                                passive = 0;
+                                document.getElementById("txtPassiveCount").innerHTML = "Pasif: 0";
+                                for (i = 0; i < JsonObj.length; i++) {
+                                    if (JsonObj[i].states == "Active") {
+                                        active++;
+                                        var trActiveUser = "<td class='tıkla'>" + JsonObj[i].user + "</td>";
+                                        var trActiveState = "<td class='green'>Aktif</td>";
+                                        $parentActive.append("<tr>" + trActiveUser + trActiveState + "</tr>");
+
+                                        document.getElementById("txtActiveCount").innerHTML += active;
+                                    } else {
+                                        passive++;
+                                        var passiveUser = "<td class='tıkla'>" + JsonObj[i].user + "</td>";
+                                        var passiveState = "<td class='red'>Pasif</td>";
+                                        $parentPassive.append("<tr>" + passiveUser + passiveState + "</tr>");
+
+                                        document.getElementById("txtPassiveCount").innerHTML += passive;
+                                    }
+
+                                }
+                                findUser();
+                            }
+
+                        }
+                        xhttp.open("POST", "get_instant_situation.php", true);
+                        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhttp.send("city=" + city + "&operation=" + operationName);
+                    }
+
+                    function findUser() {
+                        cells = document.getElementsByClassName('tıkla');
+
+                        if (cells) {
+                            for (var i = 0; i <= cells.length; i++) {
+                                cells[i].addEventListener('click', clickHandler, false);
+                            }
+                        }
+
+                    }
+
+                    function clickHandler() {
+                        selectUser = this.textContent;
+                        getSelectUserLocation();
+                    }
+
+                    function getSelectUserLocation() {
+                        clearOverlays();
+                        markers = [];
+                        centerCircle = [];
+                        centerMarker = [];
+
+                        var xhttp = new XMLHttpRequest();
+                        xhttp.onreadystatechange = function() {
+                            if (this.status == 200 && this.readyState == 4) {
+                                var jsonObj = JSON.parse(this.responseText);
+                                for (var i = 0; i < jsonObj.length; i++) {
+                                    var marker = new google.maps.Marker({
+                                        position: {
+                                            lat: parseFloat(jsonObj[i].latitude),
+                                            lng: parseFloar(jsonObj[i].longitude)
+                                        },
+                                        title: "Kullanıcı= " + selectUser + "\n" + "Saat= " + hour + "\n" + "Telefon= " + tel + "\n" +
+                                            "Telsiz Kodu= " + jsonObj[i].radio_code + "\n" + "Enlem= " + jsonObj[i].latitude + "\n" + "Boylam= " + jsonObj[i].longitude,
+                                        id: id,
+                                        icon: {
+                                            path: 'M0-48c-9.8 0-17.7 7.8-17.7 17.4 0 15.5 17.7 30.6 17.7 30.6s17.7-15.4 17.7-30.6c0-9.6-7.9-17.4-17.7-17.4z',
+                                            strokeColor: jsonObj[i].map_color,
+                                            scale: 0.4,
+                                            fillColor: jsonObj[i].map_color,
+                                            fillOpacity: 1
+                                        },
+                                        map: map
+                                    });
+                                    lastLocationDeleteCircle(selectUser);
+                                    var lastLocationCircle = new google.maps.Circle({
+                                        strokeColor: jsonObj[i].map_color,
+                                        strokeOpacity: 0.4,
+                                        id: selectUser,
+                                        strokeWeight: 2,
+                                        fillColor: jsonObj[i].map_color,
+                                        fillOpacity: 0.9,
+                                        center: {
+                                            lat: parseFloat(jsonObj[i].latitude),
+                                            lng: parseFloat(jsonObj[i].longitude)
+                                        },
+                                        radius: 3,
+                                        map: map
+                                    });
+                                    lastLocationAddCircle.push(lastLocationCircle);
+                                    addInfoWindow(marker, id);
+
+
+                                    markers.push(marker);
+                                }
+                            }
+                        }
+
+                        xhttp.open("POST", "get_user_location.php", true);
+                        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                        xhttp.send("operation=" + operationName + "&user=" + selectUser);
+                    }
+                    //setTimeout(getUserActive,10000);
+
+
+                    //----- Tüm Markerları Temizleme --------------------------------------------------------------------------------------------------------------------------------------------------------
+                    function clearOverlays() {
+                        try {
+                            for (var i = 0; i < markers.length; i++) {
+                                markers[i].setMap(null);
+                            }
+                            centerMarker[0].setMap(null);
+                            centerCircle[0].setMap(null);
+
+                            centerMarker.length = 0;
+                            centerCircle.length = 0;
+                            markers.length = 0;
+                        } catch {}
+                    }
+                    //---- Harita Hazır Olunca -------------------------------------------------------------------------------------------------------------------------------------------------------------
+                    function setMapOnAll(map) {
+                        for (var i = 0; i < markers.length; i++) {
+                            markers[i].setMap(map);
+                        }
+                        centerMarker[0].setMap(map);
+                    }
+
+                    //---- Marker Temizleme ---------------------------------------------------------------------------------------------------------------------------------------------------
+                    function clearMarkers() {
+                        setMapOnAll(null);
+                    }
+
+                    //---- Harita Başlangıç İşlemleri -----------------------------------------------------------------------------------------------------------------------------------------------------
+                    function initMap() {
+                        var lat = localStorage.getItem("lat");
+                        var lng = localStorage.getItem("lng");
+                        map = new google.maps.Map(document.getElementById('divMap'), {
+                            center: {
+                                lat: parseFloat(lat),
+                                lng: parseFloat(lng)
+                            },
+                            zoom: 10,
+                            mapTypeId: google.maps.MapTypeId.HYBRID
+                        });
+
+                        map.addListener('click', function(e) {
+                            $('#mdlMapClickCenterPoint').on('shown.bs.modal', function() {
+
+                                $('#txtOperationName').val(operationName);
+
+                            })
+                            $("#mdlMapClickCenterPoint").modal();
+                            marketLatLng = e.latLng;
+                        });
+                    }
+                    /* panControl: false,
+                            gestureHandling: 'greedy',
+                            disableDefaultUI: true,
+                            disableDoubleClickZoom: true,*/
+
+                    //---- Marker Çizme ----------------------------------------------------------------------------------------------------------------------------------------------------
+                    function placeMarker(position, map) {
+                        var marker = new google.maps.Marker({
+                            position: position,
+                            map: map
+                        });
+                        map.panTo(position);
+                    }
+                </script>
+
+
+
+                <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsElLOT3HQ4ENQhmoY9PRH8s3EkdGhUF8&libraries=visualization&callback=initMap">
+                </script>
+
+                <!--Operasyon Seçme Modalının İçindeki Tablonun Script Kodları-->
+                <script>
+                    $(document).ready(function() {
+                        $('[data-toggle="tooltip"]').tooltip();
+                        var actions = $("table td:last-child").html();
+                        // Append table with add row form on add new button click
+                        $(".add-new").click(function() {
+                            $(this).attr("disabled", "disabled");
+                            var index = $("table tbody tr:last-child").index();
+                            var row = '<tr>' +
+                                '<td><input type="text" class="form-control" name="name" id="name"></td>' +
+                                '<td><input type="text" class="form-control" name="department" id="department"></td>' +
+                                '<td><input type="text" class="form-control" name="phone" id="phone"></td>' +
+                                '<td>' + actions + '</td>' +
+                                '</tr>';
+                            $("table").append(row);
+                            $("table tbody tr").eq(index + 1).find(".add, .edit").toggle();
+                            $('[data-toggle="tooltip"]').tooltip();
+                        });
+                        // Add row on add button click
+                        $(document).on("click", ".add", function() {
+                            var empty = false;
+                            var input = $(this).parents("tr").find('input[type="text"]');
+                            input.each(function() {
+                                if (!$(this).val()) {
+                                    $(this).addClass("error");
+                                    empty = true;
+                                } else {
+                                    $(this).removeClass("error");
+                                }
+                            });
+                            $(this).parents("tr").find(".error").first().focus();
+                            if (!empty) {
+                                input.each(function() {
+                                    $(this).parent("td").html($(this).val());
+                                });
+                                $(this).parents("tr").find(".add, .edit").toggle();
+                                $(".add-new").removeAttr("disabled");
+                            }
+                        });
+                        // Edit row on edit button click
+                        $(document).on("click", ".edit", function() {
+                            $(this).parents("tr").find("td:not(:last-child)").each(function() {
+                                $(this).html('<input type="text" class="form-control" value="' + $(this).text() + '">');
+                            });
+                            $(this).parents("tr").find(".add, .edit").toggle();
+                            $(".add-new").attr("disabled", "disabled");
+                        });
+                        // Delete row on delete button click
+                        $(document).on("click", ".delete", function() {
+                            $(this).parents("tr").remove();
+                            $(".add-new").removeAttr("disabled");
+                        });
+                    });
+                </script>
+
+
+                <!-- Bootstrap core JavaScript-->
+                <script src="vendor/jquery/jquery.min.js"></script>
+                <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+                <!-- Core plugin JavaScript-->
+                <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+                <!-- Custom scripts for all pages-->
+                <script src="js/sb-admin-2.min.js"></script>
+
+                <!-- Page level plugins -->
+                <script src="vendor/chart.js/Chart.min.js"></script>
+
+                <!-- Page level custom scripts -->
+                <script src="js/demo/chart-area-demo.js"></script>
+                <script src="js/demo/chart-pie-demo.js"></script>
+
+</body>
+
+</html>
